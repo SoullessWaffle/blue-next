@@ -12,6 +12,7 @@ const utils = require('./commons/utils')
 const paths = require('./commons/paths')
 const commonQuestions = require('./commons/questions')
 const spinner = ora()
+const hasYarn = require('./commons/utils').yarnAvailable()
 
 module.exports = co.wrap(function * (options) {
   console.log('') // extra space
@@ -55,11 +56,15 @@ module.exports = co.wrap(function * (options) {
 
   spinner.succeed()
 
-  spinner.text = 'Install dependencies'
+  spinner.text = 'Install dependencies with ' + (hasYarn ? 'yarn' : 'npm')
   spinner.start()
 
   process.chdir(dest)
-  yield execa.shell('npm install')
+  if (hasYarn) {
+    yield execa.shell('yarn')
+  } else {
+    yield execa.shell('npm install')
+  }
 
   spinner.succeed()
 

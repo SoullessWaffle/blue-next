@@ -8,6 +8,7 @@ const chalk = require('chalk')
 const fs = require('fs')
 const merge = require('webpack-merge')
 const pathExists = require('path-exists')
+const detectInstalled = require('detect-installed')
 
 const checkType = function (type, value, fallback) {
   return typeof value === type ? value : fallback
@@ -155,6 +156,17 @@ const getConfig = co.wrap(function * (env) {
   }
 })
 
+/**
+ * Checks whether yarn is available for commands
+ * @returns {Boolean}
+ */
+let _yarnAvailable
+const yarnAvailable = co.wrap(function * () {
+  if (_yarnAvailable != null) return _yarnAvailable
+  _yarnAvailable = yield detectInstalled('yarn')
+  return _yarnAvailable
+})
+
 module.exports = {
   getGitUser,
   confirmPrompt,
@@ -163,5 +175,6 @@ module.exports = {
   checkType,
   getConfig,
   hasConfig,
-  requireFromFolder
+  requireFromFolder,
+  yarnAvailable
 }
